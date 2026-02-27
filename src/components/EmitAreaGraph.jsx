@@ -67,6 +67,7 @@ export default function EmitAreaGraph({ latestBatch, logs, isHydrating }) {
       wrongDirection: latestBatch.wrongDirectionCount,
       plateFinal: latestBatch.plateFinalCount,
       ocrRaw: latestBatch.ocrRawCount,
+      speeding: latestBatch.speedingCount,
     });
 
     const start = latestPointsRef.current;
@@ -86,6 +87,7 @@ export default function EmitAreaGraph({ latestBatch, logs, isHydrating }) {
             origin.wrongDirection + (point.wrongDirection - origin.wrongDirection) * eased,
           plateFinal: origin.plateFinal + (point.plateFinal - origin.plateFinal) * eased,
           ocrRaw: origin.ocrRaw + (point.ocrRaw - origin.ocrRaw) * eased,
+          speeding: origin.speeding + (point.speeding - origin.speeding) * eased,
         };
       });
 
@@ -102,10 +104,23 @@ export default function EmitAreaGraph({ latestBatch, logs, isHydrating }) {
     rafRef.current = requestAnimationFrame(tick);
   }, [latestBatch, tracker]);
 
-  const { wrongArea, wrongLine, finalArea, finalLine, ocrArea, ocrLine, chartBottom, latest } = useMemo(() => {
+  const {
+    wrongArea,
+    wrongLine,
+    finalArea,
+    finalLine,
+    ocrArea,
+    ocrLine,
+    speedingArea,
+    speedingLine,
+    chartBottom,
+    latest,
+  } = useMemo(() => {
     const maxValue = Math.max(
       1,
-      ...points.map((point) => Math.max(point.wrongDirection, point.plateFinal, point.ocrRaw))
+      ...points.map((point) =>
+        Math.max(point.wrongDirection, point.plateFinal, point.ocrRaw, point.speeding)
+      )
     );
 
     const chartHeight = HEIGHT - PADDING_TOP - PADDING_BOTTOM;
@@ -128,6 +143,11 @@ export default function EmitAreaGraph({ latestBatch, logs, isHydrating }) {
       y: chartBottomY - (point.ocrRaw / maxValue) * chartHeight,
     }));
 
+    const speedingPts = points.map((point, idx) => ({
+      x: PADDING_X + idx * stepX,
+      y: chartBottomY - (point.speeding / maxValue) * chartHeight,
+    }));
+
     return {
       wrongArea: buildAreaPath(wrongPts, chartBottomY),
       wrongLine: buildSmoothLinePath(wrongPts),
@@ -135,8 +155,12 @@ export default function EmitAreaGraph({ latestBatch, logs, isHydrating }) {
       finalLine: buildSmoothLinePath(finalPts),
       ocrArea: buildAreaPath(ocrPts, chartBottomY),
       ocrLine: buildSmoothLinePath(ocrPts),
+      speedingArea: buildAreaPath(speedingPts, chartBottomY),
+      speedingLine: buildSmoothLinePath(speedingPts),
       chartBottom: chartBottomY,
-      latest: points[points.length - 1] || { wrongDirection: 0, plateFinal: 0, ocrRaw: 0 },
+      latest:
+        points[points.length - 1] ||
+        { wrongDirection: 0, plateFinal: 0, ocrRaw: 0, speeding: 0 },
     };
   }, [points]);
 
@@ -153,6 +177,9 @@ export default function EmitAreaGraph({ latestBatch, logs, isHydrating }) {
           </span>
           <span className="emit-legend emit-legend-ocr">
             OCR RAW: {Math.round(latest.ocrRaw)}
+          </span>
+          <span className="emit-legend emit-legend-speeding">
+            SPEEDING: {Math.round(latest.speeding)}
           </span>
         </div>
       </div>
@@ -175,6 +202,10 @@ export default function EmitAreaGraph({ latestBatch, logs, isHydrating }) {
             <stop offset="0%" stopColor="#2563eb" stopOpacity="0.3" />
             <stop offset="100%" stopColor="#2563eb" stopOpacity="0.05" />
           </linearGradient>
+          <linearGradient id="speedingFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#facc15" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#facc15" stopOpacity="0.07" />
+          </linearGradient>
         </defs>
 
         <line
@@ -189,10 +220,12 @@ export default function EmitAreaGraph({ latestBatch, logs, isHydrating }) {
         <path d={wrongArea} fill="url(#wrongDirFill)" />
         <path d={finalArea} fill="url(#plateFinalFill)" />
         <path d={ocrArea} fill="url(#ocrRawFill)" />
+        <path d={speedingArea} fill="url(#speedingFill)" />
 
         <path d={wrongLine} fill="none" stroke="#dc2626" strokeWidth="3" />
         <path d={finalLine} fill="none" stroke="#16a34a" strokeWidth="3" />
         <path d={ocrLine} fill="none" stroke="#2563eb" strokeWidth="3" />
+        <path d={speedingLine} fill="none" stroke="#facc15" strokeWidth="3" />
       </svg>
     </div>
   );

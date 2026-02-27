@@ -85,6 +85,7 @@ export default function useLogsSocket(url) {
         (entry) => entry?.type === "PLATE_FINAL"
       ).length;
       const ocrRawCount = batch.filter((entry) => entry?.type === "OCR_RAW").length;
+      const speedingCount = batch.filter((entry) => entry?.type === "SPEEDING").length;
 
       setLatestBatch({
         token: batchToken,
@@ -93,6 +94,7 @@ export default function useLogsSocket(url) {
         wrongDirectionCount,
         plateFinalCount,
         ocrRawCount,
+        speedingCount,
       });
 
       setLogs((prev) => {

@@ -12,6 +12,7 @@ export default class EmitMetricsSeries {
       wrongDirection: 0,
       plateFinal: 0,
       ocrRaw: 0,
+      speeding: 0,
     }));
   }
 
@@ -28,6 +29,7 @@ export default class EmitMetricsSeries {
         wrongDirection: 0,
         plateFinal: 0,
         ocrRaw: 0,
+        speeding: 0,
       };
 
       if (log?.type === "WRONG_DIRECTION") {
@@ -38,6 +40,9 @@ export default class EmitMetricsSeries {
       }
       if (log?.type === "OCR_RAW") {
         current.ocrRaw += 1;
+      }
+      if (log?.type === "SPEEDING") {
+        current.speeding += 1;
       }
 
       bucketMap.set(bucketTs, current);
@@ -50,12 +55,14 @@ export default class EmitMetricsSeries {
         wrongDirection: 0,
         plateFinal: 0,
         ocrRaw: 0,
+        speeding: 0,
       };
       return {
         ts_ms: ts,
         wrongDirection: existing.wrongDirection,
         plateFinal: existing.plateFinal,
         ocrRaw: existing.ocrRaw,
+        speeding: existing.speeding,
       };
     });
 
@@ -68,6 +75,7 @@ export default class EmitMetricsSeries {
       wrongDirection: Number(sample?.wrongDirection ?? 0),
       plateFinal: Number(sample?.plateFinal ?? 0),
       ocrRaw: Number(sample?.ocrRaw ?? 0),
+      speeding: Number(sample?.speeding ?? 0),
     };
 
     this.points = [...this.points.slice(1), point];

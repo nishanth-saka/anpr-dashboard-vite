@@ -7,20 +7,32 @@ const KNOWN_TYPES = [
   "WRONG_DIRECTION",
 ];
 
-function getTypeStyle(type) {
+function getTypeStyle(type, isDarkMode = false) {
   switch (type) {
     case "OCR_RAW":
-      return { border: "#4da6ff", bg: "#eaf4ff" };
+      return isDarkMode
+        ? { border: "#4da6ff", bg: "#0f2236" }
+        : { border: "#4da6ff", bg: "#eaf4ff" };
     case "PLATE_CANDIDATE":
-      return { border: "#f59e0b", bg: "#fff7e6" };
+      return isDarkMode
+        ? { border: "#f59e0b", bg: "#2a2110" }
+        : { border: "#f59e0b", bg: "#fff7e6" };
     case "SPEEDING":
-      return { border: "#f59e0b", bg: "#fff7e6" };
+      return isDarkMode
+        ? { border: "#f59e0b", bg: "#2a2110" }
+        : { border: "#f59e0b", bg: "#fff7e6" };
     case "PLATE_FINAL":
-      return { border: "#16a34a", bg: "#e9f9ef" };
+      return isDarkMode
+        ? { border: "#16a34a", bg: "#10261a" }
+        : { border: "#16a34a", bg: "#e9f9ef" };
     case "WRONG_DIRECTION":
-      return { border: "#ef4444", bg: "#ffefef" };
+      return isDarkMode
+        ? { border: "#ef4444", bg: "#2f1515" }
+        : { border: "#ef4444", bg: "#ffefef" };
     default:
-      return { border: "#94a3b8", bg: "#f4f6fa" };
+      return isDarkMode
+        ? { border: "#94a3b8", bg: "#1f2630" }
+        : { border: "#94a3b8", bg: "#f4f6fa" };
   }
 }
 
@@ -64,7 +76,13 @@ function buildMetadata(log, nowMs) {
     }
   }
   
-  if (log?.vehicle_type) items.push({ label: "Vehicle", value: log.vehicle_type });
+  const vehicleLabel =
+    log?.data?.vehicle_class ||
+    log?.data?.vehicle_type ||
+    log?.vehicle_class ||
+    log?.vehicle_type;
+
+  if (vehicleLabel) items.push({ label: "Vehicle", value: vehicleLabel });
   if (log?.direction) items.push({ label: "Dir", value: log.direction });
   items.push({ label: "Time", value: formatRelativeMins(log?.ts_ms, nowMs) });
 
@@ -72,20 +90,27 @@ function buildMetadata(log, nowMs) {
 }
 
 function getVehicleIcon(log) {
-  const raw = String(log?.vehicle_class || log?.vehicle_type || "")
+  const raw = String(
+    log?.data?.vehicle_class ||
+      log?.data?.vehicle_type ||
+      log?.vehicle_class ||
+      log?.vehicle_type ||
+      ""
+  )
     .trim()
     .toLowerCase();
 
-  if (!raw) return "🚗";
-  if (raw.includes("bike") || raw.includes("motorcycle") || raw.includes("scooter")) {
-    return "🏍️";
+  if (!raw || raw === "car") return "🚗";
+
+  if (raw === "motorcycle") {
+    return "🛵";
   }
-  if (raw.includes("truck") || raw.includes("lorry")) return "🚚";
-  if (raw.includes("bus")) return "🚌";
+  if (raw === "bus" || raw.includes("bus")) return "🚌";
+  if (raw === "truck" || raw.includes("truck") || raw.includes("lorry")) return "🚚";
   if (raw.includes("van")) return "🚐";
   if (raw.includes("auto") || raw.includes("rickshaw")) return "🛺";
   if (raw.includes("tractor")) return "🚜";
-  return "🚗";
+  return "🛵";
 }
 
 export default function UnifiedLogList({
@@ -104,6 +129,7 @@ export default function UnifiedLogList({
   const [copied, setCopied] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState(KNOWN_TYPES);
   const [nowMs, setNowMs] = useState(() => Date.now());
+  const isDarkMode = document.documentElement.getAttribute("data-theme") === "dark";
 
   const availableTypes = useMemo(() => {
     const fromLogs = logs
@@ -128,7 +154,7 @@ export default function UnifiedLogList({
       }
 
       if (log?.type === "SPEEDING") {
-        if (speedingVisibleCount >= 2) return false;
+        if (speedingVisibleCount >= 5) return false;
         speedingVisibleCount += 1;
         return true;
       }
@@ -326,7 +352,7 @@ export default function UnifiedLogList({
 
       <div ref={listRef} style={{ overflowY: "auto", flex: 1, paddingRight: 4 }}>
         {filteredLogs.map((log, index) => {
-          const typeStyle = getTypeStyle(log?.type);
+          const typeStyle = getTypeStyle(log?.type, isDarkMode);
           const metadata = buildMetadata(log, nowMs);
           const vehicleIcon = getVehicleIcon(log);
           const key = `${log?.id || "tmp"}-${log?.ts_ms || index}-${index}`;
@@ -370,7 +396,14 @@ export default function UnifiedLogList({
                 <span>{log?.type || "UNKNOWN"}</span>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   {isNew && <span className="log-new-badge">NEW</span>}
-                  <span title={String(log?.vehicle_class || log?.vehicle_type || "unknown")}
+                  <span
+                    title={String(
+                      log?.data?.vehicle_class ||
+                        log?.data?.vehicle_type ||
+                        log?.vehicle_class ||
+                        log?.vehicle_type ||
+                        "unknown"
+                    )}
                     style={{ fontSize: 30, lineHeight: 1 }}>
                     {vehicleIcon}
                   </span>
