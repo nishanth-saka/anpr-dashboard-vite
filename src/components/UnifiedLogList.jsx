@@ -59,7 +59,13 @@ function buildMetadata(log, nowMs) {
 
   if (camId) items.push({ label: "Cam", value: camId });
   if (isTextEmit && emitText) items.push({ label: "Text", value: emitText });
-  
+
+  // Always show confidence label
+  const confPct = getConfidencePercent(log);
+  if (typeof confPct === "number") {
+    items.push({ label: "Conf", value: `${confPct.toFixed(2)}%` });
+  }
+
   if (isSpeeding) {
     const vehicleSpeed =
       log?.data?.metadata?.vehicle_speed_pxps ??
@@ -69,13 +75,8 @@ function buildMetadata(log, nowMs) {
     if (typeof vehicleSpeed === "number" && !Number.isNaN(vehicleSpeed)) {
       items.push({ label: "Speed", value: `${vehicleSpeed.toFixed(1)} km/h` });
     }
-  } else {
-    const confPct = getConfidencePercent(log);
-    if (typeof confPct === "number") {
-      items.push({ label: "Conf", value: `${confPct.toFixed(2)}%` });
-    }
   }
-  
+
   const vehicleLabel =
     log?.data?.vehicle_class ||
     log?.data?.vehicle_type ||
