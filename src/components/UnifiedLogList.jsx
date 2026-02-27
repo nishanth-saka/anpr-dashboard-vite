@@ -148,10 +148,8 @@ export default function UnifiedLogList({
 
     return logs.filter((log) => {
       if (!selectedTypes.includes(log?.type)) return false;
-      if (log?.type === "WRONG_DIRECTION") {
-        const confPct = getConfidencePercent(log);
-        if (!(typeof confPct === "number" && confPct > 25)) return false;
-      }
+
+      // ...existing code...
 
       if (log?.type === "SPEEDING") {
         if (speedingVisibleCount >= 5) return false;
@@ -241,6 +239,7 @@ export default function UnifiedLogList({
     }
     setSelectedTypes(availableTypes);
   };
+
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -343,6 +342,8 @@ export default function UnifiedLogList({
           Unselect all
         </label>
       </div>
+
+      {/* Confidence slider removed as requested */}
 
       {latestBatch && (
         <div className="log-batch-indicator">
