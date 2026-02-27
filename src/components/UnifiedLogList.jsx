@@ -307,7 +307,7 @@ export default function UnifiedLogList({
       >
         <span
           style={{
-            fontSize: 24,
+            fontSize: 14,
             fontWeight: 700,
           }}
         >
@@ -316,7 +316,7 @@ export default function UnifiedLogList({
         {availableTypes.map((type) => (
           <label
             key={type}
-            style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 24 }}
+            style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 14 }}
           >
             <input
               type="checkbox"
@@ -331,7 +331,7 @@ export default function UnifiedLogList({
             display: "flex",
             alignItems: "center",
             gap: 5,
-            fontSize: 24,
+            fontSize: 14,
             fontWeight: 700,
           }}
         >
@@ -379,15 +379,15 @@ export default function UnifiedLogList({
                 background: typeStyle.bg,
                 borderLeft: `5px solid ${typeStyle.border}`,
                 borderRadius: 8,
-                fontSize: 28,
-                minHeight: 132,
+                fontSize: 17,
+                minHeight: 80,
                 cursor: "pointer",
               }}
             >
               <div
                 style={{
                   opacity: 0.9,
-                  fontSize: 24,
+                  fontSize: 14,
                   fontWeight: 800,
                   display: "flex",
                   justifyContent: "space-between",
@@ -411,7 +411,7 @@ export default function UnifiedLogList({
                   </span>
                 </div>
               </div>
-              <div style={{ marginTop: 6, fontWeight: 600, fontSize: 28 }}>
+              <div style={{ marginTop: 6, fontWeight: 600, fontSize: 17 }}>
                 {log?.message || "—"}
               </div>
               <div
@@ -420,7 +420,7 @@ export default function UnifiedLogList({
                   flexWrap: "wrap",
                   gap: 6,
                   marginTop: 10,
-                  fontSize: 24,
+                  fontSize: 14,
                 }}
               >
                 {metadata.map((item) => (
@@ -429,7 +429,7 @@ export default function UnifiedLogList({
                     style={{
                       border: "1px solid rgba(100,116,139,0.35)",
                       borderRadius: 999,
-                      padding: "4px 10px",
+                      padding: "2px 6px",
                       background: "rgba(255,255,255,0.45)",
                     }}
                   >
