@@ -44,10 +44,11 @@ export default function EmitAreaGraph({ latestBatch, logs, isHydrating }) {
     };
   }, []);
 
+
+  // On mount, hydrate from logs (once)
   useEffect(() => {
     if (didBootstrapRef.current) return;
     if (isHydrating) return;
-
     const bootstrapped = tracker.initializeFromLogs(logs, Date.now());
     latestPointsRef.current = bootstrapped;
     requestAnimationFrame(() => {
@@ -55,6 +56,14 @@ export default function EmitAreaGraph({ latestBatch, logs, isHydrating }) {
     });
     didBootstrapRef.current = true;
   }, [isHydrating, logs, tracker]);
+
+  // On every logs change, always re-initialize chart points from logs (keeps legend in sync)
+  useEffect(() => {
+    if (isHydrating) return;
+    const bootstrapped = tracker.initializeFromLogs(logs, Date.now());
+    latestPointsRef.current = bootstrapped;
+    setPoints(bootstrapped);
+  }, [logs, isHydrating, tracker]);
 
   useEffect(() => {
     if (!latestBatch?.token) return;
