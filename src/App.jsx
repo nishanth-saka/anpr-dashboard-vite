@@ -24,6 +24,7 @@ export default function App() {
     logs,
     isHydrating,
     latestBatch,
+    rtspStatus,
     socketState,
     incomingCount,
     droppedCount,
@@ -41,6 +42,21 @@ export default function App() {
     streamName,
     pollMs: 3000,
   });
+
+  const effectiveStreamHealth = useMemo(() => {
+    const base = healthQuery.streamHealth || null;
+    if (!rtspStatus) return base;
+
+    return {
+      ...(base || {}),
+      state: rtspStatus.status || base?.state || "unknown",
+      updated_at: rtspStatus.updated_at || base?.updated_at,
+      last_success_at: rtspStatus.last_success_at || base?.last_success_at,
+      last_error: rtspStatus.last_error || base?.last_error,
+      last_reconnect_reason:
+        rtspStatus.last_error || base?.last_reconnect_reason || "none",
+    };
+  }, [healthQuery.streamHealth, rtspStatus]);
 
   const istLabel = useMemo(
     () =>
@@ -62,10 +78,10 @@ export default function App() {
 
   useEffect(() => {
     if (!isStreamReloading) return;
-    if (healthQuery.streamHealth?.state === "healthy") {
+    if (effectiveStreamHealth?.state === "healthy") {
       setIsStreamReloading(false);
     }
-  }, [isStreamReloading, healthQuery.streamHealth?.state]);
+  }, [isStreamReloading, effectiveStreamHealth?.state]);
 
   useEffect(() => {
     if (!isStreamReloading) return;
@@ -155,7 +171,7 @@ export default function App() {
         <div className="preview-column">
           <OverlayViewer
             streamUrl={streamUrl}
-            health={healthQuery.streamHealth}
+            health={effectiveStreamHealth}
             healthLoading={healthQuery.isLoading}
             healthFetching={healthQuery.isFetching}
             healthError={healthQuery.isError}

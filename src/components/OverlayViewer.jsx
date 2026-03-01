@@ -10,8 +10,10 @@ function getStatusColor(status) {
     case "connecting":
       return "#2563eb";
     case "failed":
+    case "error":
       return "#dc2626";
     case "cooldown":
+    case "stopped":
       return "#ea580c";
     default:
       return "#64748b";
