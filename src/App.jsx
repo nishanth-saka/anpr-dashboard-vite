@@ -172,9 +172,6 @@ export default function App() {
           <OverlayViewer
             streamUrl={streamUrl}
             health={effectiveStreamHealth}
-            healthLoading={healthQuery.isLoading}
-            healthFetching={healthQuery.isFetching}
-            healthError={healthQuery.isError}
             onReconnect={handleReconnectRtsp}
             reconnectDisabled={reconnectDisabled}
             reconnectPending={isReconnectPending}
