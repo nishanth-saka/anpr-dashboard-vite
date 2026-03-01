@@ -21,6 +21,7 @@ export default function useLogsSocket(url) {
   const [logs, setLogs] = useState([]);
   const [isHydrating, setIsHydrating] = useState(true);
   const [latestBatch, setLatestBatch] = useState(null);
+  const [rtspStatus, setRtspStatus] = useState(null);
   const [socketState, setSocketState] = useState("connecting");
   const [incomingCount, setIncomingCount] = useState(0);
   const [droppedCount, setDroppedCount] = useState(0);
@@ -186,7 +187,14 @@ export default function useLogsSocket(url) {
         setLastMessageTs(now);
 
         try {
-          const data = normalizeLog(JSON.parse(event.data));
+          const message = JSON.parse(event.data);
+
+          if (message?.type === "rtsp_status" && message?.data && typeof message.data === "object") {
+            setRtspStatus(message.data);
+            return;
+          }
+
+          const data = normalizeLog(message);
           bufferRef.current.push(data);
           setIncomingCount((prev) => prev + 1);
         } catch {
@@ -242,6 +250,7 @@ export default function useLogsSocket(url) {
     logs,
     isHydrating,
     latestBatch,
+    rtspStatus,
     socketState,
     incomingCount,
     droppedCount,

@@ -18,8 +18,10 @@ function getStateColor(state) {
     case "connecting":
       return "#4da6ff";
     case "failed":
+    case "error":
       return "#ff4d4d";
     case "cooldown":
+    case "stopped":
       return "#ff8a65";
     default:
       return "#9aa5b1";

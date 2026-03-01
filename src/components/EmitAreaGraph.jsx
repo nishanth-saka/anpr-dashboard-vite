@@ -178,18 +178,10 @@ export default function EmitAreaGraph({ latestBatch, logs, isHydrating }) {
       <div className="emit-graph-head">
         <h3 style={{ margin: 0 }}>Realtime Emit Levels</h3>
         <div className="emit-graph-legend-wrap">
-          <span className="emit-legend emit-legend-wrong">
-            Wrong Direction: {Math.round(latest.wrongDirection)}
-          </span>
-          <span className="emit-legend emit-legend-final">
-            Plate Final: {Math.round(latest.plateFinal)}
-          </span>
-          <span className="emit-legend emit-legend-ocr">
-            OCR RAW: {Math.round(latest.ocrRaw)}
-          </span>
-          <span className="emit-legend emit-legend-speeding">
-            SPEEDING: {Math.round(latest.speeding)}
-          </span>
+          <span className="emit-legend emit-legend-wrong">Wrong Direction</span>
+          <span className="emit-legend emit-legend-final">Plate Final</span>
+          <span className="emit-legend emit-legend-ocr">OCR RAW</span>
+          <span className="emit-legend emit-legend-speeding">SPEEDING</span>
         </div>
       </div>
 
