@@ -1,5 +1,3 @@
-import StreamHealthPanel from "./StreamHealthPanel";
-
 function getStatusColor(status) {
   switch (status) {
     case "healthy":
@@ -23,9 +21,6 @@ function getStatusColor(status) {
 export default function OverlayViewer({
   streamUrl,
   health,
-  healthLoading,
-  healthFetching,
-  healthError,
   onReconnect,
   reconnectDisabled,
   reconnectPending,
@@ -92,13 +87,6 @@ export default function OverlayViewer({
           </div>
         )}
       </div>
-      <StreamHealthPanel
-        health={health}
-        isLoading={healthLoading}
-        isFetching={healthFetching}
-        isError={healthError}
-        resetKey={streamReloadToken}
-      />
     </div>
   );
 }
